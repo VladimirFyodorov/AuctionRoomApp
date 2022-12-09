@@ -1,0 +1,12 @@
+table {
+  margin: 30px;
+}
+
+thead {
+	height: 100px;
+}
+
+tr.main {
+	margin-top: 30px;
+	padding-top: 30px;
+}

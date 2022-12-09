@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import Table from '../Table';
 
 function App() {
   const [data, setData] = useState({});
@@ -25,6 +26,7 @@ function App() {
   return (
     <>
       <h1>Hello</h1>
+      <Table data={data}/>
     </>
   );
 }

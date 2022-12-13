@@ -14,10 +14,10 @@ app.get("/api", (req, res) => {
 				offer: { price: 99 },
 			}
 	};
-
+	console.log('Fetch data from server');
   res.json(data)
 })
 
 app.listen(5000, () => {
-	console.log('Server started');
+	console.log('Server started on port 5000');
 })

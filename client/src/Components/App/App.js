@@ -9,29 +9,17 @@ function App() {
   const [thisUser, setThisUser] = useState(1);
   const [bettingUser, setBettingUser] = useState(1);
   const [deadline, setDeadline] = useState('');
+  
   const startBet = () => {
     setBettingUser(thisUser);
     const twoMinutes = 2*60;
     setDeadline(twoMinutes)
   }
-  useEffect(() => {
-    const part1 = {
-      participant: { id: 1, name: 'ООО Ласточка'},
-      offer: { price: 100 },
-    };
-
-    const part2 = {
-      participant: { id: 2, name: 'ООО Бабочка'},
-      offer: { price: 99 },
-    };
-
-    setData({...data, 1: part1, 2: part2});
-  }, []);
 
   useEffect(() => {
-    fetch("/api")
-      // .then(res => res.json())
-      .then(res => console.log(res));
+    fetch("api")
+      .then(res => res.json())
+      .then(res => setData(res));
   }, []);
 
   return (

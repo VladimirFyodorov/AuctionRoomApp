@@ -1,20 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import './App.css';
 import Header from '../Header';
 import Table from '../Table';
 import Form from '../Form';
 
+dayjs.extend(utc);
+
 function App() {
   const [data, setData] = useState({});
   const [thisUser, setThisUser] = useState(1);
-  const [bettingUser, setBettingUser] = useState(1);
-  const [deadline, setDeadline] = useState('');
-  
-  const startBet = () => {
-    setBettingUser(thisUser);
-    const twoMinutes = 2*60;
-    setDeadline(twoMinutes)
-  }
+  const [bet, setBet] = useState({});
+  const wsRef = useRef(null);
 
   useEffect(() => {
     fetch("api")
@@ -22,17 +20,54 @@ function App() {
       .then(res => setData(res));
   }, []);
 
+  useEffect(() => {
+    // Create WebSocket connection.
+    wsRef.current = new WebSocket('ws://localhost:5000');
+
+    // Connection opened
+    wsRef.current.addEventListener('open', (event) => {
+      console.log('Connected to WS Server');
+    });
+
+    // Listen for messages
+    wsRef.current.addEventListener('message', (event) => {
+      const parsedData = JSON.parse(event.data);
+      if (parsedData.deadline !== '') {
+        parsedData.deadline = dayjs(parsedData.deadline).utc();
+      }
+      console.log('parsedData ', parsedData);
+      setBet(parsedData);
+    });
+
+    return () => wsRef.current.close();
+
+  }, [])
+
+
+  const startBet = () => {
+    const newDeadline = dayjs.utc().add(20, 's');
+    const data = { user: thisUser, deadline: newDeadline };
+    console.log('Starting bet: ', JSON.stringify(data));
+    wsRef.current.send(JSON.stringify(data));
+  }
+
+  const endBet = () => {
+    const data = { user: thisUser, deadline: '' };
+    console.log('Ending bet: ', JSON.stringify(data));
+    wsRef.current.send(JSON.stringify(data));
+  }
+
+
   return (
     <>
       <Header/>
       <div className='page'>
         <Table
           data={data}
-          bettingUser={bettingUser}
           thisUser={thisUser}
+          bet={bet}
           startBet={startBet}
-          deadline={deadline}
-          setDeadline={setDeadline}
+          endBet={endBet}
         />
         <Form
           data={data}

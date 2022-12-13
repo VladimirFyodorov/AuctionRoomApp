@@ -1,25 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import duration from 'dayjs/plugin/duration';
 import './Timer.css';
 
-export default function Timer({ deadline, setDeadline }) {
-  const minutes = Math.floor(deadline / 60);
-  const seconds = deadline % 60;
-  const secStr = (seconds > 9) ? seconds : `0${seconds}`;
-  const str = `00:0${minutes}:${secStr}`;
+dayjs.extend(utc);
+dayjs.extend(duration);
+
+export default function Timer({ bet }) {
+  const [timerStr, setTimerStr] = useState('');
 
   useEffect(() => {
-    if (deadline > 0) {
+    const now = dayjs.utc();
+    if (bet.deadline !== '' && bet.deadline.diff(now) > 0) {
       const interval = setInterval(() => {
-        setDeadline(deadline - 1);
+        const diff = bet.deadline.diff(now);
+        const str = dayjs.duration(diff).format('HH:mm:ss');
+        setTimerStr(str);
       }, 1000);
 
       return () => clearInterval(interval);
     }
-  }, [deadline]);
+  }, [timerStr, bet.deadline]);
 
-  return (
-		<div className="timer">
-			{str}
-		</div>
-	)
+  if (bet.deadline !== '' && bet.deadline.diff(dayjs.utc()) > 0) {
+    return (
+      <div className="timer">
+        {timerStr}
+      </div>
+    )
+  } return <></>;
 }

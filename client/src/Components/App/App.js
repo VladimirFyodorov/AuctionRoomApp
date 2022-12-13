@@ -14,7 +14,6 @@ function App() {
     const twoMinutes = 2*60;
     setDeadline(twoMinutes)
   }
-
   useEffect(() => {
     const part1 = {
       participant: { id: 1, name: 'ООО Ласточка'},
@@ -27,6 +26,12 @@ function App() {
     };
 
     setData({...data, 1: part1, 2: part2});
+  }, []);
+
+  useEffect(() => {
+    fetch("/api")
+      // .then(res => res.json())
+      .then(res => console.log(res));
   }, []);
 
   return (

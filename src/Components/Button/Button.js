@@ -1,5 +1,5 @@
-export default function Button() {
+export default function Button({ startBet }) {
 	return (
-		<button>Начать ход</button>
+		<button onClick={startBet}>Начать ход</button>
 	)
 };

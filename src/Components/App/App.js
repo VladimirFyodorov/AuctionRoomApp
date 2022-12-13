@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import Header from '../Header';
 import Table from '../Table';
+import Form from '../Form';
 
 function App() {
   const [data, setData] = useState({});
@@ -19,14 +21,13 @@ function App() {
     setData({...data, 1: part1, 2: part2});
   }, []);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   return (
     <>
-      <h1>Hello</h1>
-      <Table data={data}/>
+      <Header/>
+      <div className='page'>
+        <Table data={data}/>
+        <Form data={data}/>
+      </div>
     </>
   );
 }

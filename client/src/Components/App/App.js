@@ -15,14 +15,14 @@ function App() {
   const wsRef = useRef(null);
 
   useEffect(() => {
-    fetch("api")
+    fetch('api')
       .then(res => res.json())
       .then(res => setData(res));
   }, []);
 
   useEffect(() => {
     // Create WebSocket connection.
-    wsRef.current = new WebSocket('ws://localhost:5000');
+    wsRef.current = new WebSocket(`ws://${window.location.host}`);
 
     // Connection opened
     wsRef.current.addEventListener('open', (event) => {
@@ -45,7 +45,7 @@ function App() {
 
 
   const startBet = () => {
-    const newDeadline = dayjs.utc().add(20, 's');
+    const newDeadline = dayjs.utc().add(2, 'm');
     const data = { user: thisUser, deadline: newDeadline };
     console.log('Starting bet: ', JSON.stringify(data));
     wsRef.current.send(JSON.stringify(data));

@@ -11,7 +11,7 @@ dayjs.extend(utc);
 function App() {
   const [data, setData] = useState({});
   const [thisUser, setThisUser] = useState(1);
-  const [bet, setBet] = useState({});
+  const [bet, setBet] = useState({ user: '', deadline: '' });
   const wsRef = useRef(null);
 
   useEffect(() => {

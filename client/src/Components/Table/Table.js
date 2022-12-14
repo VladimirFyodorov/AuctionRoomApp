@@ -1,25 +1,27 @@
 import './Table.css';
 import Button from '../Button';
 import Timer from '../Timer';
+import useTimer from '../useTimer';
 
 export default function Table ({ data, thisUser, bet, startBet, endBet }) {
+	const timer = useTimer({ thisUser, bet });
 	const ids = Object.keys(data).map(key => +key);
   return (
 		<table>
-			<TimerRow  ids={ids} bet={bet}/>
-			<TableHeader data={data} ids={ids} />
+			<TimerRow  ids={ids} timer={timer} />
+			<TableHeader ids={ids} data={data} />
 			<tbody>
-				<PriceRow data={data} ids={ids} />
-				<ButtonsRow ids={ids} thisUser={thisUser} bet={bet} startBet={startBet} endBet={endBet}/>
+				<PriceRow ids={ids} data={data} />
+				<ButtonsRow ids={ids} timer={timer} startBet={startBet} endBet={endBet} />
 			</tbody>
 		</table>
 	);
 }
 
-function TimerRow({ bet, ids }) {
+function TimerRow({ ids, timer }) {
 	// render button only for current user else render empty td
 	const tds = ids.map(id => {
-		if (id === bet.user) return <th key={id}><Timer bet={bet}/></th>;
+		if (id === timer.bettingUser) return <th key={id}><Timer timer={timer}/></th>;
 		return <th key={id}></th>;
 	});
 	return (
@@ -65,16 +67,15 @@ function PriceRow({ data, ids }) {
 	);
 };
 
-function ButtonsRow({ ids, thisUser, bet, startBet, endBet }) {
+function ButtonsRow({ ids, startBet, endBet, timer }) {
 	// render button only for current user else render empty td
 	const tds = ids.map(id => {
-		if (id === thisUser) return (
+		if (id === timer.thisUser) return (
 			<td key={id}>
-				<Button 
-					thisUser={thisUser}
-					bet={bet}
+				<Button
 					startBet={startBet}
 					endBet={endBet}
+					timer={timer}
 				/>
 			</td>
 			);

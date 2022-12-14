@@ -16,22 +16,18 @@ let bet = {user: '', deadline: ''};
 
 
 wss.on('connection', function connection(ws) {
-	console.log('A new client connected');
 	ws.send(JSON.stringify(bet));
 	
   ws.on('message', function message(data) {
 		const parsedData = JSON.parse(data);
-		console.log('dayjs(bet.deadline).diff(dayjs.utc()) ', dayjs(bet.deadline).diff(dayjs.utc()));
 		if (
 			(bet.user === parsedData.user && parsedData.deadline === '') // ending bet
 			|| (bet.deadline === '') // starting bet and bet edit is empty
 			|| (dayjs(bet.deadline).diff(dayjs.utc()) < 0) // deadline past now
 			) {
 			bet = parsedData;
-			console.log('JSON.stringify(bet) ', JSON.stringify(bet));
-			ws.send(JSON.stringify(bet));
 			wss.clients.forEach(client => {
-				if (client !== ws && client.readyState === WebSocket.OPEN) {
+				if (client.readyState === WebSocket.OPEN) {
 					client.send(JSON.stringify(bet));
 				}
 			})

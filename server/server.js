@@ -1,11 +1,17 @@
 import express from 'express';
 import http from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
+import path from 'path';
+import url from 'url';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 dayjs.extend(utc);
 
+
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const app = express();
+app.use(express.static(path.join(__dirname, 'build')));
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server: server });
 const data = {
@@ -41,6 +47,10 @@ app.get("/api", (req, res) => {
   res.json(data)
 })
 
+app.get("/", (req, res) => {
+	console.log('Sending html');
+  res.sendFile(path.join(__dirname, 'build', 'index.html'))
+})
 
 server.listen(5000, () => {
 	console.log('Server started on port 5000');

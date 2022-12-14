@@ -14,18 +14,18 @@ const useTimer = ({ thisUser, bet }) => {
 		thisUser: thisUser,
 		active: false,
 		countdown: '',
+		btnActive: true,
+		btnText: 'Начать ход',
+		btnAction: 'start bet',
 		getNow: function () { return dayjs.utc(); },
 		getActive: function () { return this.deadline !== '' && this.deadline.diff(this.getNow()) > 0; },
 		getCountdown: function () {
 			if (this.deadline === '') return '';
 			return dayjs.duration(this.deadline.diff(this.getNow())).format('HH:mm:ss');
 		},
-		btnActive: true,
-		btnText: 'Начать ход',
-		btnAction: 'start bet',
 		// if timer isn't active or (timer is active and current user is betting)
 		getBtnActive: function () { return !this.getActive() || this.bettingUser === this.thisUser; },
-		getBtnText: function () { return (this.bettingUser === this.thisUser) ? 'Закончить ход' : 'Начать ход'; },
+		getBtnText: function () { return !this.getActive() ? 'Начать ход': 'Закончить ход'; },
 		getBtnAction: function () {
 			// if timer isn't active anyone can start betting
 			if (!this.getActive()) return 'start bet';
@@ -69,7 +69,7 @@ const useTimer = ({ thisUser, bet }) => {
 	// update to alive timer
   useEffect(() => {
     if (timer.getActive()) {
-      const interval = setInterval(updateCalcFields, 1000);
+      const interval = setInterval(updateCalcFields, 500);
 
       return () => clearInterval(interval);
     }

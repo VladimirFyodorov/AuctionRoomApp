@@ -2,6 +2,8 @@
 
 Go to http://62.217.177.149:5000/
 
+App uses web socket protocol and therefore all users of the App will see timer simultaneously.
+
 ## Init
 
 ```

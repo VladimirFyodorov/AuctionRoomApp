@@ -11,7 +11,7 @@ dayjs.extend(utc);
 function App() {
   const [data, setData] = useState({});
   const [thisUser, setThisUser] = useState(1);
-  const [bet, setBet] = useState({ user: '', deadline: '' });
+  const [bet, setBet] = useState({ user: '', deadline: '', newOffer: {} });
   const wsRef = useRef(null);
 
   useEffect(() => {
@@ -22,7 +22,8 @@ function App() {
 
   useEffect(() => {
     // Create WebSocket connection.
-    wsRef.current = new WebSocket(`ws://${window.location.host}`);
+    // wsRef.current = new WebSocket(`ws://${window.location.host}`);
+    wsRef.current = new WebSocket('ws://localhost:5000');
 
     // Connection opened
     wsRef.current.addEventListener('open', (event) => {
@@ -31,31 +32,32 @@ function App() {
 
     // Listen for messages
     wsRef.current.addEventListener('message', (event) => {
-      const parsedData = JSON.parse(event.data);
-      if (parsedData.deadline !== '') {
-        parsedData.deadline = dayjs(parsedData.deadline).utc();
+      const newBet = JSON.parse(event.data);
+      if (newBet.deadline !== '') { // reciving start bet msg
+        newBet.deadline = dayjs(newBet.deadline).utc();
       }
-      console.log('parsedData ', parsedData);
-      setBet(parsedData);
+      setBet(newBet);
+      setData(data => {
+        if (!newBet.user || !data[newBet.user]) return data;
+        const { participant } = data[newBet.user];
+        return { ...data, [newBet.user]: { participant, offer: newBet.newOffer }}
+      });
     });
 
     return () => wsRef.current.close();
-
-  }, [])
+  }, []);
 
 
   const startBet = () => {
     const newDeadline = dayjs.utc().add(2, 'm');
-    const data = { user: thisUser, deadline: newDeadline };
-    console.log('Starting bet: ', JSON.stringify(data));
-    wsRef.current.send(JSON.stringify(data));
-  }
+    const newBet = { user: thisUser, deadline: newDeadline, newOffer: data[thisUser].offer };
+    wsRef.current.send(JSON.stringify(newBet));
+  };
 
   const endBet = () => {
-    const data = { user: thisUser, deadline: '' };
-    console.log('Ending bet: ', JSON.stringify(data));
-    wsRef.current.send(JSON.stringify(data));
-  }
+    const newBet = { user: thisUser, deadline: '', newOffer: bet.newOffer };
+    wsRef.current.send(JSON.stringify(newBet));
+  };
 
 
   return (
@@ -66,6 +68,7 @@ function App() {
           data={data}
           thisUser={thisUser}
           bet={bet}
+          setBet={setBet}
           startBet={startBet}
           endBet={endBet}
         />
